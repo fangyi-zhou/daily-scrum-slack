@@ -1,5 +1,6 @@
 const RtmClient = require('@slack/client').RtmClient;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 
 const bot_token = process.env.SLACK_BOT_TOKEN || '';
 
@@ -17,6 +18,12 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
     rtm.sendMessage("Hello world!", scrumChannel);
+});
+
+rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
+    if (msg.channel === scrumChannel && msg.text === "digest") {
+        rtm.sendMessage("TODO: Send digest", scrumChannel);
+    }
 });
 
 rtm.start();
