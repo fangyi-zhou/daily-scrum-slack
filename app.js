@@ -5,8 +5,18 @@ const bot_token = process.env.SLACK_BOT_TOKEN || '';
 
 const rtm = new RtmClient(bot_token);
 
+let scrumChannel;
+
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
-    console.log(`Logged in as ${rtmStartData.self.name} of team ${rtmStartData.team.name}, but not yet connected to a channel`);
+    for (const c of rtmStartData.channels) {
+        if (c.is_member && c.name === "scrum") {
+            scrumChannel = c.id;
+        }
+    }
+});
+
+rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+    rtm.sendMessage("Hello world!", scrumChannel);
 });
 
 rtm.start();
