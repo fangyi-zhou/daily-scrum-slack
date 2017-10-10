@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/fangyi-zhou/daily-scrum-slack#readme",
   "dependencies": {
-    "@slack/client": "^3.14.0"
+    "@slack/client": "^3.14.0",
+    "express": "^4.16.2"
   }
 }

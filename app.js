@@ -10,3 +10,7 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 });
 
 rtm.start();
+
+const express = require('express');
+const app = express();
+app.listen(process.env.PORT);
