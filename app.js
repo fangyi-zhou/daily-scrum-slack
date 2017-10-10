@@ -23,6 +23,9 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
         rtm.sendMessage("TODO: Send digest", scrumChannel);
     }
+    if (msg.channel.startsWith("D")) {
+        rtm.sendMessage(msg.text, msg.channel);
+    }
 });
 
 rtm.start();
