@@ -1,0 +1,23 @@
+{
+  "name": "daily-scrum-slack",
+  "version": "1.0.0",
+  "description": "Daily Scrum for Slack",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fangyi-zhou/daily-scrum-slack.git"
+  },
+  "author": "Fangyi Zhou",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fangyi-zhou/daily-scrum-slack/issues"
+  },
+  "homepage": "https://github.com/fangyi-zhou/daily-scrum-slack#readme",
+  "dependencies": {
+    "@slack/client": "^3.14.0"
+  }
+}
