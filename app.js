@@ -17,7 +17,6 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 });
 
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-    rtm.sendMessage("Hello world!", scrumChannel);
 });
 
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
