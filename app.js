@@ -13,6 +13,7 @@ let uidToName = {};
 let nameToUid = {};
 let userToDM = {};
 let DMToUser = {};
+let userInReport = {};
 
 web.users.list((err, info) => {
     if (err) {
@@ -54,8 +55,21 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
         rtm.sendMessage("TODO: Send digest", scrumChannel);
     }
     if (msg.channel.startsWith("D") && msg.user !== rtm.activeUserId) {
-        console.log("%o", msg);
-        rtm.sendMessage(msg.text + " From " + uidToName[msg.user], msg.channel);
+        if (userInReport[msg.user]) {
+            const report = msg.text;
+            // TODO: Store in database
+            userInReport[msg.user] = false;
+            rtm.message("Report recorded. Thanks!", msg.channel);
+            return;
+        }
+        if (msg.text === "report") {
+            rtm.sendMessage("Please reply with your report for today", msg.channel);
+        } else if (msg.text === "view") {
+            // TODO: Query database
+            rtm.sendMessage("You have not submitted your record for today", msg.channel);
+        } else {
+            rtm.sendMessage("Usage: view | report ", msg.channel);
+        }
     }
 });
 
