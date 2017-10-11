@@ -122,7 +122,20 @@ const remindPeopleJob = schedule.scheduleJob("* 23 * * 1-5", () => {
 });
 
 const express = require('express');
+const bodyParser = require('body-parser');
+const urlEncodedParser = bodyParser.urlencoded( { extended: false } );
 const app = express();
+app.use(urlEncodedParser);
+app.post("/morningdigest", (req, res) => {
+    const body = req.body;
+    if (body.token !== process.env.VERIFICATION_TOKEN) {
+        res.status(403).end();
+    } else {
+        lastDigest = digest();
+        morningDigest();
+        res.status(200).end();
+    }
+});
 app.listen(process.env.PORT);
 
 const http = require("http");
