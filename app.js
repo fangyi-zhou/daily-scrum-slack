@@ -42,7 +42,7 @@ let scrumChannel;
 
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
     for (const c of rtmStartData.channels) {
-        if (c.is_member && c.name === "scrum") {
+        if (c.name === "scrum") {
             scrumChannel = c.id;
         }
     }
@@ -54,10 +54,11 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
         let digest = "";
-        userReport.forEach((report, uid) => {
-            digest += "@" + uidToName[uid] + ": " + report + "\n";
+        Object.keys(userReport).forEach( (uid) => {
+            digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
         });
-        rtm.sendMessage(digest, msg.channel);
+        rtm.sendMessage(digest === "" ? "No digest available" : digest, msg.channel);
+        return;
     }
     if (msg.channel.startsWith("D") && msg.user !== rtm.activeUserId) {
         if (userInReport[msg.user]) {
