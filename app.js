@@ -59,10 +59,11 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
             const report = msg.text;
             // TODO: Store in database
             userInReport[msg.user] = false;
-            rtm.message("Report recorded. Thanks!", msg.channel);
+            rtm.sendMessage("Report recorded. Thanks!", msg.channel);
             return;
         }
         if (msg.text === "report") {
+            userInReport[msg.user] = true;
             rtm.sendMessage("Please reply with your report for today", msg.channel);
         } else if (msg.text === "view") {
             // TODO: Query database
