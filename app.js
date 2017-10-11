@@ -86,3 +86,8 @@ rtm.start();
 const express = require('express');
 const app = express();
 app.listen(process.env.PORT);
+
+const http = require("http");
+setInterval(() => {
+    http.get("http://daily-scrum-slack.herokuapp.com");
+}, 300000);
