@@ -2,6 +2,7 @@ const RtmClient = require('@slack/client').RtmClient;
 const WebClient = require('@slack/client').WebClient;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
+const schedule = require('node-schedule');
 
 const bot_token = process.env.SLACK_BOT_TOKEN || '';
 const web_token = process.env.SLACK_API_TOKEN || '';
@@ -15,6 +16,7 @@ let userToDM = {};
 let DMToUser = {};
 let userInReport = {};
 let userReport = {};
+let lastDigest;
 
 web.users.list((err, info) => {
     if (err) {
@@ -53,10 +55,7 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
-        let digest = "";
-        Object.keys(userReport).forEach( (uid) => {
-            digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
-        });
+        const digest = digest();
         rtm.sendMessage(digest === "" ? "No digest available" : digest, msg.channel);
         return;
     }
@@ -82,6 +81,45 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
 });
 
 rtm.start();
+
+function digest() {
+    let digest = "";
+    Object.keys(userReport).forEach( (uid) => {
+        digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
+    });
+    return digest;
+}
+
+function morningDigest() {
+    rtm.sendMessage("Good morning, this is the morning digest\n" + lastDigest, scrumChannel);
+}
+
+function clearReport() {
+    userReport = {};
+    userInReport = {};
+    lastDigest = digest();
+}
+
+function remindPeople() {
+    Object.keys(userToDM).forEach( (uid) => {
+        const channel = userToDM[uid];
+        if (uid !== rtm.activeUserId && userInReport[uid] === undefined) {
+            rtm.sendMessage("Hi. You have not submitted your scrum report yet. Don't forget to do that before 7am.", channel);
+        }
+    })
+}
+
+const morningDigestJob = schedule.scheduleJob("* 10 * * 1-5", () => {
+    morningDigest();
+});
+
+const clearReportJob = schedule.scheduleJob("* 7 * * 1-5", () => {
+    clearReport();
+});
+
+const remindPeopleJob = schedule.scheduleJob("* 23 * * 1-5", () => {
+    remindPeople()
+});
 
 const express = require('express');
 const app = express();
