@@ -53,7 +53,11 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
-        rtm.sendMessage("TODO: Send digest", scrumChannel);
+        let digest = "";
+        userReport.forEach((report, uid) => {
+            digest += "@" + uidToName[uid] + ": " + report + "\n";
+        });
+        rtm.sendMessage(digest, msg.channel);
     }
     if (msg.channel.startsWith("D") && msg.user !== rtm.activeUserId) {
         if (userInReport[msg.user]) {
