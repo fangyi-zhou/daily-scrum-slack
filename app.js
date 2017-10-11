@@ -40,6 +40,15 @@ web.im.list((err, info) => {
     }
 });
 
+
+function getDigest() {
+    let digest = "";
+    Object.keys(userReport).forEach( (uid) => {
+        digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
+    });
+    return digest;
+}
+
 let scrumChannel;
 
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
@@ -55,7 +64,7 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
-        const digest = digest();
+        const digest = getDigest();
         rtm.sendMessage(digest === "" ? "No digest available" : digest, msg.channel);
         return;
     }
@@ -82,22 +91,14 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
 
 rtm.start();
 
-function digest() {
-    let digest = "";
-    Object.keys(userReport).forEach( (uid) => {
-        digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
-    });
-    return digest;
-}
-
 function morningDigest() {
     rtm.sendMessage("Good morning, this is the morning digest\n" + lastDigest, scrumChannel);
 }
 
 function clearReport() {
+    lastDigest = getDigest();
     userReport = {};
     userInReport = {};
-    lastDigest = digest();
 }
 
 function remindPeople() {
@@ -131,7 +132,7 @@ app.post("/morningdigest", (req, res) => {
     if (body.token !== process.env.VERIFICATION_TOKEN) {
         res.status(403).end();
     } else {
-        lastDigest = digest();
+        lastDigest = getDigest();
         morningDigest();
         res.status(200).end();
     }
