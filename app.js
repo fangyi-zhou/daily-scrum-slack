@@ -53,8 +53,9 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
         rtm.sendMessage("TODO: Send digest", scrumChannel);
     }
-    if (msg.channel.startsWith("D")) {
-        rtm.sendMessage(msg.text + " From " +uidToName[DMToUser[msg.channel]], msg.channel);
+    if (msg.channel.startsWith("D") && msg.user !== rtm.activeUserId) {
+        console.log("%o", msg);
+        rtm.sendMessage(msg.text + " From " + uidToName[msg.user], msg.channel);
     }
 });
 
