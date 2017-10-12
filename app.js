@@ -111,7 +111,7 @@ function clearReport() {
 function remindPeople() {
     Object.keys(userToDM).forEach( (uid) => {
         const channel = userToDM[uid];
-        if (uid !== rtm.activeUserId && userInReport[uid] === undefined) {
+        if (uid !== rtm.activeUserId && userReport[uid] === undefined) {
             rtm.sendMessage("Hi. You have not submitted your scrum report yet. Don't forget to do that before 7am.", channel);
             console.log("Reminded " +  uidToName[uid] + " on " + channel);
         }
