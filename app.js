@@ -46,6 +46,9 @@ function getDigest() {
     Object.keys(userReport).forEach( (uid) => {
         digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
     });
+    if (digest === "") {
+        digest = "No digest available.";
+    }
     return digest;
 }
 
@@ -65,7 +68,7 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
     if (msg.channel === scrumChannel && msg.text === "digest") {
         const digest = getDigest();
-        rtm.sendMessage(digest === "" ? "No digest available" : digest, msg.channel);
+        rtm.sendMessage(digest, msg.channel);
         return;
     }
     if (msg.channel.startsWith("D") && msg.user !== rtm.activeUserId) {
@@ -92,6 +95,9 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
 rtm.start();
 
 function morningDigest() {
+    if (lastDigest === undefined) {
+        lastDigest = getDigest();
+    }
     rtm.sendMessage("Good morning, this is the morning digest\n" + lastDigest, scrumChannel);
 }
 
@@ -132,7 +138,6 @@ app.post("/morningdigest", (req, res) => {
     if (body.token !== process.env.VERIFICATION_TOKEN) {
         res.status(403).end();
     } else {
-        lastDigest = getDigest();
         morningDigest();
         res.status(200).end();
     }
