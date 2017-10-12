@@ -72,6 +72,7 @@ rtm.on(RTM_EVENTS.MESSAGE, (msg) => {
         return;
     }
     if (msg.channel.startsWith("D") && msg.user !== rtm.activeUserId) {
+        console.log("Received message from " + msg.channel + " from " + msg.user);
         if (userInReport[msg.user]) {
             const report = msg.text;
             userReport[msg.user] = report;
@@ -112,6 +113,7 @@ function remindPeople() {
         const channel = userToDM[uid];
         if (uid !== rtm.activeUserId && userInReport[uid] === undefined) {
             rtm.sendMessage("Hi. You have not submitted your scrum report yet. Don't forget to do that before 7am.", channel);
+            console.log("Reminded " +  uidToName[uid] + " on " + channel);
         }
     })
 }
