@@ -1,5 +1,4 @@
 const RtmClient = require('@slack/client').RtmClient;
-const WebClient = require('@slack/client').WebClient;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 const schedule = require('node-schedule');
@@ -9,43 +8,15 @@ const bot_token = process.env.SLACK_BOT_TOKEN || '';
 const web_token = process.env.SLACK_API_TOKEN || '';
 
 const rtm = new RtmClient(bot_token);
-const web = new WebClient(web_token);
 
-let uidToName = {};
-let nameToUid = {};
-let userToDM = {};
-let DMToUser = {};
 let userInReport = {};
 let userReport = {};
 let lastDigest;
 
-web.users.list((err, info) => {
-    if (err) {
-        console.log(err);
-    } else {
-        for (const user of info.members) {
-            uidToName[user.id] = user.name;
-            nameToUid[user.name] = user.id;
-        }
-    }
-});
-
-web.im.list((err, info) => {
-    if (err) {
-        console.log(err);
-    } else {
-        for (const im of info.ims) {
-            userToDM[im.user] = im.id;
-            DMToUser[im.id] = im.user;
-        }
-    }
-});
-
-
 function getDigest() {
     let digest = "";
     Object.keys(userReport).forEach( (uid) => {
-        digest += "@" + uidToName[uid] + ": " + userReport[uid] + "\n";
+        digest += "@" + users[uid].name + ": " + userReport[uid] + "\n";
     });
     if (digest === "") {
         digest = "No digest available.";
@@ -54,12 +25,20 @@ function getDigest() {
 }
 
 let scrumChannel;
+let ims = {};
+let users = {};
 
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
     for (const c of rtmStartData.channels) {
         if (c.name === "scrum") {
             scrumChannel = c.id;
         }
+    }
+    for (const im of rtmStartData.ims) {
+        ims[im.user] = im.id;
+    }
+    for (const user of rtmStartData.users) {
+        users[user.id] = user;
     }
 });
 
@@ -110,11 +89,11 @@ function clearReport() {
 }
 
 function remindPeople() {
-    Object.keys(userToDM).forEach( (uid) => {
-        const channel = userToDM[uid];
+    Object.keys(ims).forEach( (uid) => {
+        const channel = ims[uid];
         if (uid !== rtm.activeUserId && userReport[uid] === undefined) {
             rtm.sendMessage("Hi. You have not submitted your scrum report yet. Don't forget to do that before 7am.", channel);
-            console.log("Reminded " +  uidToName[uid] + " on " + channel);
+            console.log("Reminded " +  users[uid].name + " on " + channel);
         }
     })
 }
