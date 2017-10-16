@@ -133,7 +133,7 @@ app.post("/morningdigest", (req, res) => {
             json: true
         }, (err) => {
             if (err) console.log(err);
-            res.status(err ? 200: 500).end();
+            res.status(err ? 500: 200).end();
         });
     }
 });
