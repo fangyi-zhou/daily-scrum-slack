@@ -98,15 +98,15 @@ function remindPeople() {
     })
 }
 
-const morningDigestJob = schedule.scheduleJob("* 10 * * 1-5", () => {
+const morningDigestJob = schedule.scheduleJob("0 10 * * 1-5", () => {
     morningDigest();
 });
 
-const clearReportJob = schedule.scheduleJob("* 7 * * 1-5", () => {
+const clearReportJob = schedule.scheduleJob("0 7 * * 1-5", () => {
     clearReport();
 });
 
-const remindPeopleJob = schedule.scheduleJob("* 23 * * 1-5", () => {
+const remindPeopleJob = schedule.scheduleJob("0 23 * * 1-5", () => {
     remindPeople()
 });
 
