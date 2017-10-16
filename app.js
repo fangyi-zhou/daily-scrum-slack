@@ -3,6 +3,7 @@ const WebClient = require('@slack/client').WebClient;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 const schedule = require('node-schedule');
+const request = require('request');
 
 const bot_token = process.env.SLACK_BOT_TOKEN || '';
 const web_token = process.env.SLACK_API_TOKEN || '';
@@ -140,8 +141,21 @@ app.post("/morningdigest", (req, res) => {
     if (body.token !== process.env.VERIFICATION_TOKEN) {
         res.status(403).end();
     } else {
-        morningDigest();
-        res.status(200).end();
+        const reply = body.response_url;
+        if (lastDigest === undefined) {
+            lastDigest = getDigest();
+        }
+        request({
+            url: reply,
+            method: 'POST',
+            body: {
+                text: lastDigest
+            },
+            json: true
+        }, (err) => {
+            if (err) console.log(err);
+            res.status(err ? 200: 500).end();
+        });
     }
 });
 app.listen(process.env.PORT);

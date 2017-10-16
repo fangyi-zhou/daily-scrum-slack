@@ -19,8 +19,9 @@
   "homepage": "https://github.com/fangyi-zhou/daily-scrum-slack#readme",
   "dependencies": {
     "@slack/client": "^3.14.0",
+    "body-parser": "latest",
     "express": "^4.16.2",
     "node-schedule": "^1.2.5",
-    "body-parser": "latest"
+    "request": "^2.83.0"
   }
 }
